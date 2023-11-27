@@ -1,7 +1,8 @@
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.io.PrintWriter;
 
 /**
  * A simple implementation of the heap data structure.
@@ -119,7 +120,7 @@ public class Heap<T> implements LinearStructure<T> {
   public boolean isFull() {
     return false;
   } // isFull()
-  
+
   /**
    * Peek at the highest-priority element.
    */
@@ -183,16 +184,59 @@ public class Heap<T> implements LinearStructure<T> {
    * necessary.
    */
   void heapDown(int i) {
-    // STUB
+    int rt = right(i);
+    int lf = left(i);
+    if (lf >= this.size && rt >= this.size) {
+      return;
+    } // if
+    int min = minimum(lf, rt);
+    if (priority.compare(this.values.get(min), this.values.get(i)) < 0) {
+      Collections.swap(this.values, min, i);
+      heapDown(min);
+    } // if
   } // heapDown(i)
+
+  int minimum(int lf, int rt) {
+    if (lf >= this.size) {
+      return rt;
+    } else if (rt >= this.size) {
+      return lf;
+    } // if/else
+    T leftValue = this.values.get(lf);
+    T rightValue = this.values.get(rt);
+    return priority.compare(leftValue, rightValue) < 0 ? lf : rt;
+  } // minimum()
+
 
   /**
    * Restore a heap in which position i may be in the wrong place
    * with respect to its ancestors by swapping up as necessary.
    */
   void heapUp(int i) {
-    // STUB
+    int par = parent(i);
+    while ((par >= 0) && (priority.compare(this.values.get(i), this.values.get(par)) < 0)) {
+      Collections.swap(this.values, i, par);
+      i = par;
+      par = parent(par);
+    } // while
   } // heapUp(i)
+
+  /**
+   * Restore a heap in which position i may be in the wrong place
+   * with respect to its ancestors by swapping up as necessary.
+   */
+  void heapUpRec(int i) {
+    int par = parent(i);
+    if (priority.compare(this.values.get(i), this.values.get(par)) < 0) {
+      Collections.swap(this.values, i, par);
+    } else {
+      return;
+    }// if/else
+    if (par == 0) {
+      return;
+    } // if
+    heapUpRec(par);
+  } // heapUpRec(int)
 
   /**
    * Turn the underlying array into a heap.
@@ -202,11 +246,11 @@ public class Heap<T> implements LinearStructure<T> {
   } // heapify()
 
   /**
-   * Turn the underlying array into a heap, using the technique from 
+   * Turn the underlying array into a heap, using the technique from
    * CLRS.
    */
   void heapifyCLRS() {
-    for (int i = this.size/2; i >= 0; i--) {
+    for (int i = this.size / 2; i >= 0; i--) {
       heapDown(i);
     } // for
   } // heapifyCLRS()
@@ -228,21 +272,21 @@ public class Heap<T> implements LinearStructure<T> {
    * Get the index of the left child of position i.
    */
   int left(int i) {
-    return 2*i + 1;
+    return 2 * i + 1;
   } // left(int)
 
   /**
    * Get the index of the parent of position i.
    */
   int parent(int i) {
-    return (i-1)/2;
+    return (i - 1) / 2;
   } // parent(int)
 
   /**
    * Get the index of the right child of position i.
    */
   int right(int i) {
-    return 2*i + 2;
+    return 2 * i + 2;
   } // right(int)
 
 } // class Heap<T>
